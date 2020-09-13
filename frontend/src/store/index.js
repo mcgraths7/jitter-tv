@@ -1,7 +1,11 @@
-import { createStore } from 'redux';
+import { createStore, combineReducers } from 'redux';
 
-const blahReducer = (blah = null, action) => blah;
+import authReducer from '../reducers/authReducer';
 
-const store = createStore(blahReducer);
+const store = createStore(
+  combineReducers({
+    isLoggedIn: authReducer,
+  }),
+);
 
 export default store;
