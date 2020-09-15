@@ -1,7 +1,8 @@
-export const login = () => ({
-  type: 'auth/login',
+import { AUTH_TRY_SIGN_IN, AUTH_TRY_SIGN_OUT } from './types';
+
+export const trySignIn = (userId) => ({
+  type: AUTH_TRY_SIGN_IN,
+  payload: userId,
 });
 
-export const logout = () => ({
-  type: 'auth/logout',
-});
+export const trySignOut = () => ({ type: AUTH_TRY_SIGN_OUT });

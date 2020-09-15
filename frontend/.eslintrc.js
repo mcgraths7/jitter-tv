@@ -3,11 +3,7 @@ module.exports = {
     browser: true,
     es2020: true,
   },
-  extends: [
-    'plugin:react/recommended',
-    'plugin:react-hooks/recommended',
-    'airbnb',
-  ],
+  extends: ['plugin:react/recommended', 'airbnb'],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
@@ -15,6 +11,8 @@ module.exports = {
     ecmaVersion: 11,
     sourceType: 'module',
   },
-  plugins: ['react', 'react-hooks'],
-  rules: {},
+  plugins: ['react'],
+  rules: {
+    'react/prop-types': 0,
+  },
 };

@@ -1,69 +1,89 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
 import clientId from '../secrets/clientId';
-import { login, logout } from '../actions/authActions';
+import { trySignIn, trySignOut } from '../actions/authActions';
 
-const GoogleAuth = ({ isLoggedIn, login, logout }) => {
-  const [auth, setAuth] = useState(null);
+class GoogleAuthClass extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onAuthChange = this.onAuthChange.bind(this);
+    this.onSignInButtonClicked = this.onSignInButtonClicked.bind(this);
+    this.onSignOutButtonClicked = this.onSignOutButtonClicked.bind(this);
+  }
 
-  useEffect(() => {
-    window.gapi.load('client:auth2', () => {
+  componentDidMount() {
+    window.gapi.load('client: auth2', () => {
       window.gapi.client
         .init({
           clientId,
           scope: 'email',
         })
         .then(() => {
-          setAuth(window.gapi.auth2.getAuthInstance());
+          this.auth = window.gapi.auth2.getAuthInstance();
+          this.onAuthChange(this.auth.isSignedIn.get());
+          this.auth.isSignedIn.listen(this.onAuthChange);
         });
     });
-  }, []);
-
-  const onLoginButtonClicked = () => {
-    auth.signIn().then(() => {
-      login();
-    });
-  };
-
-  const onLogoutButtonClicked = () => {
-    auth.signOut().then(() => {
-      logout();
-    });
-  };
-
-  if (!auth) {
-    return (
-      <button className="ui google plus button loading button">
-        Loading...
-      </button>
-    );
   }
 
-  if (!isLoggedIn) {
+  onAuthChange(isSignedIn) {
+    const { auth, props } = this;
+    if (isSignedIn) {
+      props.trySignIn(auth.currentUser.get().getId());
+    } else {
+      props.trySignOut();
+    }
+  }
+
+  onSignInButtonClicked() {
+    this.auth.signIn();
+  }
+
+  onSignOutButtonClicked() {
+    this.auth.signOut();
+  }
+
+  render() {
+    const { auth, props } = this;
+    if (!auth) {
+      return (
+        <button type="button" className="ui google plus button loading button">
+          Loading...
+        </button>
+      );
+    }
+
+    if (!props.isLoggedIn) {
+      return (
+        <button
+          type="button"
+          className="ui google plus button small"
+          onClick={this.onSignInButtonClicked}
+        >
+          <i className="google icon" />
+          Login with Google
+        </button>
+      );
+    }
     return (
       <button
+        type="button"
         className="ui google plus button small"
-        onClick={onLoginButtonClicked}
+        onClick={this.onSignOutButtonClicked}
       >
-        <i className="google icon"></i>
-        Login with Google
+        <i className="google icon" />
+        Logout
       </button>
     );
   }
-  return (
-    <button
-      className="ui google plus button small"
-      onClick={onLogoutButtonClicked}
-    >
-      <i className="google icon"></i>
-      Logout
-    </button>
-  );
-};
+}
 
 const mapStateToProps = (state) => ({
-  isLoggedIn: state.isLoggedIn,
+  isLoggedIn: state.auth.isLoggedIn,
 });
 
-export default connect(mapStateToProps, { login, logout })(GoogleAuth);
+export default connect(mapStateToProps, {
+  trySignIn,
+  trySignOut,
+})(GoogleAuthClass);
