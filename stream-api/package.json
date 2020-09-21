@@ -1,0 +1,15 @@
+{
+  "name": "stream-api",
+  "version": "1.0.0",
+  "description": "API Server for hosting stream records\"",
+  "main": "index.js",
+  "repository": "https://github.com/mcgraths7/jitter-tv",
+  "author": "Steven McGrath",
+  "license": "MIT",
+  "dependencies": {
+    "json-server": "^0.16.1"
+  },
+  "scripts": {
+    "start": "json-server -p 3001 -w db.json"
+  }
+}

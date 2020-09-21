@@ -1,24 +1,36 @@
 import React from 'react';
-import { HashRouter as Router, Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import StreamList from './streams/StreamList';
 import StreamShow from './streams/StreamShow';
 import StreamCreate from './streams/StreamCreate';
 import StreamEdit from './streams/StreamEdit';
 import StreamDelete from './streams/StreamDelete';
+import StreamDashboard from './streams/StreamDashboard';
 import Header from './layout/Header';
+import { getAllStreams } from '../actions/streamActions';
 
-const App = () => (
-  <div className="ui container">
-    <Router>
-      <Header />
-      <Route path="/" exact component={StreamList} />
-      <Route path="/streams" exact component={StreamShow} />
-      <Route path="/streams/new" exact component={StreamCreate} />
-      <Route path="/streams/edit" exact component={StreamEdit} />
-      <Route path="/streams/delete" exact component={StreamDelete} />
-    </Router>
-  </div>
-);
+class App extends React.Component {
+  componentDidMount() {
+    const { getAllStreams } = this.props;
+    getAllStreams();
+  }
+  render() {
+    return (
+      <div className="ui container">
+        <Header />
+        <Switch>
+          <Route exact path="/" component={StreamList} />
+          <Route path="/streams/new" component={StreamCreate} />
+          <Route path="/streams/:streamId/edit" component={StreamEdit} />
+          <Route path="/streams/:streamId/delete" component={StreamDelete} />
+          <Route path="/streams/:streamId" component={StreamShow} />
+          <Route path="/dashboard" component={StreamDashboard} />
+        </Switch>
+      </div>
+    );
+  }
+}
 
-export default App;
+export default connect(null, { getAllStreams })(App);
