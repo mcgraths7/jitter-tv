@@ -1,15 +1,22 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import { deleteStream, getAllStreams } from '../../actions/streamActions';
+import { getAllStreams } from '../../actions/streamActions';
 
-class StreamDashboard extends React.Component {
-  onDeleteButtonClicked = (streamId) => {
-    //
-  };
+const StreamDashboard = ({ getAllStreams, currentUserId }) => {
+  const [userStreams, setUserStreams] = useState(null);
+  useEffect(() => {
+    const getUserStreams = async () => {
+      const response = await getAllStreams();
+      setUserStreams(
+        response.filter((stream) => stream.userId === currentUserId),
+      );
+    };
+    getUserStreams();
+  }, [currentUserId, getAllStreams]);
 
-  renderButtons = (stream) => {
+  const renderButtons = (stream) => {
     return (
       <div className="right floated content">
         <Link to={`/streams/${stream.id}/edit`}>
@@ -22,32 +29,27 @@ class StreamDashboard extends React.Component {
     );
   };
 
-  renderList = () => {
-    const { streams, currentUserId } = this.props;
-    // console.log(usersStreams);
-    const usersStreams = streams.filter(
-      (stream) => stream.userId === currentUserId,
-    );
-    return usersStreams.map((stream) => (
-      <div className="item" key={stream.id}>
-        {this.renderButtons(stream)}
-        <i className="large middle aligned icon camera" />
-        <div className="content">
-          {stream.streamTitle}
-          <div className="description">{stream.streamDescription}</div>
+  const renderList = () => {
+    if (userStreams) {
+      return userStreams.map((stream) => (
+        <div className="item" key={stream.id}>
+          {renderButtons(stream)}
+          <i className="large middle aligned icon camera" />
+          <div className="content">
+            {stream.streamTitle}
+            <div className="description">{stream.streamDescription}</div>
+          </div>
         </div>
-      </div>
-    ));
+      ));
+    }
+    return 'Could not load streams';
   };
 
-  render() {
-    return <div className="ui celled list">{this.renderList()}</div>;
-  }
-}
+  return <div className="ui celled list">{renderList()}</div>;
+};
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   currentUserId: state.auth.userId,
-  streams: Object.values(state.streams),
 });
 
-export default connect(mapStateToProps, { deleteStream })(StreamDashboard);
+export default connect(mapStateToProps, { getAllStreams })(StreamDashboard);

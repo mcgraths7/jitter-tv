@@ -1,8 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 
-const StreamEdit = (props) => {
-  console.log(props);
-  return <div>StreamEdit</div>;
+import { getOneStream } from '../../actions/streamActions';
+
+const StreamEdit = ({ match, getOneStream, currentUserId }) => {
+  const [selectedStream, setSelectedStream] = useState(null);
+  useEffect(() => {
+    const streamId = match.params.streamId;
+    const getStream = async () => {
+      const response = await getOneStream(streamId);
+      if (response) {
+        setSelectedStream(response);
+      }
+    };
+    getStream();
+  }, [getOneStream, match.params.streamId]);
+
+  const { streamId } = match.params;
+  if (selectedStream && selectedStream.userId !== currentUserId) {
+    return 'Not authorized to view this page';
+  } else if (selectedStream) {
+    return <div>{`Editing ${selectedStream.streamTitle}`}</div>;
+  }
+  return <div>{`Could not find stream with ID of ${streamId}`}</div>;
 };
 
-export default StreamEdit;
+const mapStateToProps = (state) => ({
+  currentUserId: state.auth.userId,
+});
+
+export default connect(mapStateToProps, { getOneStream })(StreamEdit);

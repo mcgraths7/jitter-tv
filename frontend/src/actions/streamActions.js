@@ -9,12 +9,20 @@ import apiServer from '../apis/api-server';
 
 export const getAllStreams = () => async (dispatch) => {
   const response = await apiServer.get('/streams');
-  dispatch({ type: STREAMS_GET_ALL_STREAMS, payload: response.data });
+  if (response.status === 200) {
+    dispatch({ type: STREAMS_GET_ALL_STREAMS, payload: response.data });
+    return response.data;
+  }
+  return null;
 };
 
 export const getOneStream = (streamId) => async (dispatch) => {
   const response = await apiServer.get(`/streams/${streamId}`);
-  dispatch({ type: STREAMS_GET_STREAM, payload: response.data });
+  if (response.status === 200) {
+    dispatch({ type: STREAMS_GET_STREAM, payload: response.data });
+    return response.data;
+  }
+  return null;
 };
 
 export const createStream = (formValues) => async (dispatch, getState) => {
