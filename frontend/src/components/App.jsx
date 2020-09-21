@@ -8,7 +8,6 @@ import StreamEdit from './streams/StreamEdit';
 import StreamDelete from './streams/StreamDelete';
 import StreamDashboard from './streams/StreamDashboard';
 import Header from './layout/Header';
-import Modal from './layout/Modal';
 
 const App = () => {
   return (
