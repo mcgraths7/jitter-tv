@@ -58,6 +58,11 @@ export const editStream = (formValues, streamId) => async (
 };
 
 export const deleteStream = (streamId) => async (dispatch) => {
-  await apiServer.delete(`/streams/${streamId}`);
-  dispatch({ type: STREAMS_DELETE_STREAM, payload: streamId });
+  console.log(streamId);
+  const response = await apiServer.delete(`/streams/${streamId}`);
+  if (response.status === 200) {
+    dispatch({ type: STREAMS_DELETE_STREAM, payload: streamId });
+    return true;
+  }
+  return false;
 };
