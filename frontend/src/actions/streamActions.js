@@ -38,12 +38,23 @@ export const createStream = (formValues) => async (dispatch, getState) => {
   return false;
 };
 
-export const editStream = (formValues, streamId) => async (dispatch) => {
-  const response = await apiServer.put(`/streams/${streamId}`, formValues);
-  dispatch({
-    type: STREAMS_EDIT_STREAM,
-    payload: response.data,
+export const editStream = (formValues, streamId) => async (
+  dispatch,
+  getState,
+) => {
+  const { userId } = getState().auth;
+  const response = await apiServer.patch(`/streams/${streamId}`, {
+    ...formValues,
+    userId,
   });
+  if (response.status === 200) {
+    dispatch({
+      type: STREAMS_EDIT_STREAM,
+      payload: response.data,
+    });
+    return true;
+  }
+  return false;
 };
 
 export const deleteStream = (streamId) => async (dispatch) => {
